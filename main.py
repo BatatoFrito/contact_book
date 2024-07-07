@@ -8,12 +8,17 @@ from pathlib import Path
 from copy import deepcopy
 import json
 import os
+import sys
 
 def clear():
     return os.system('cls')
 
 def pause():
     return os.system('pause')
+
+def close():
+    clear()
+    return sys.exit()
 
 class ContactBook:
     def __init__(self, contacts: dict, json_file: Path) -> None:
@@ -194,26 +199,48 @@ class ContactBook:
             print('Last action undone\n')
             pause()
         clear()
-        
-FILE_PATH = Path(__file__).absolute().parent
-CONTACTS_PATH = FILE_PATH / 'contacts.json'
 
-try:
-    with open(CONTACTS_PATH, 'r') as f:
-        data = json.load(f)
-except(FileNotFoundError):
-    with open(CONTACTS_PATH, 'w+') as f:
-        f.write('{'
-                '"contacts": ['
-                    '{'
-                        '"First Name": "Example",'
-                        '"Last Name": "Example",'
-                        '"E-mail": "example@email.com",'
-                        '"Phone": "1234-5678"'
-                    '}'
-                            ']'
-                '}')
-        f.seek(0)
-        data = json.load(f)
+def cb_menu(contact_book: ContactBook):
+    choices = {('A', 'ADD', '[A]dd contact'): contact_book.add,
+               ('R', 'REMOVE', '[R]emove contact'): contact_book.remove,
+               ('E', 'EDIT', '[E]dit contact'): contact_book.edit,
+               ('S', 'SEE', '[S]ee contacts'): contact_book.see,
+               ('U', 'UNDO', '[U]ndo last action'): contact_book.undo,
+               ('C', 'CLOSE', '[C]lose the contact book'): close}
+    while True:
+        choices_str = ''
+        for choice in choices.keys():
+            choices_str += f'{choice[-1]} | '
+        choices_str = choices_str[:-3]
+        print(f'What would you like to do with your contact book?\n\n{choices_str}\n')
+        choice_selected = input().upper()
 
-contact_book = ContactBook(data, CONTACTS_PATH)
+        for choice in choices.keys():
+            if choice_selected in choice:
+                choices[choice]()
+
+
+if __name__ == '__main__':     
+    FILE_PATH = Path(__file__).absolute().parent
+    CONTACTS_PATH = FILE_PATH / 'contacts.json'
+
+    try:
+        with open(CONTACTS_PATH, 'r') as f:
+            data = json.load(f)
+    except(FileNotFoundError):
+        with open(CONTACTS_PATH, 'w+') as f:
+            f.write('{'
+                    '"contacts": ['
+                        '{'
+                            '"First Name": "Example",'
+                            '"Last Name": "Example",'
+                            '"E-mail": "example@email.com",'
+                            '"Phone": "1234-5678"'
+                        '}'
+                                ']'
+                    '}')
+            f.seek(0)
+            data = json.load(f)
+
+    contact_book = ContactBook(data, CONTACTS_PATH)
+    cb_menu(contact_book)
