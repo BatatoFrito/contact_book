@@ -26,6 +26,12 @@ class ContactBook:
         self.json_file = json_file
         self.history = []
         self.contact_info = ['First Name', 'Last Name', 'E-mail', 'Phone']
+        self.menu_choices = {('A', 'ADD', '[A]dd contact'): self.add,
+                ('R', 'REMOVE', '[R]emove contact'): self.remove,
+                ('E', 'EDIT', '[E]dit contact'): self.edit,
+                ('S', 'SEE', '[S]ee contacts'): self.see,
+                ('U', 'UNDO', '[U]ndo last action'): self.undo,
+                ('C', 'CLOSE', '[C]lose the contact book'): close}
 
     def add(self):
         temp_contact = {}
@@ -200,24 +206,19 @@ class ContactBook:
             pause()
         clear()
 
-def cb_menu(contact_book: ContactBook):
-    choices = {('A', 'ADD', '[A]dd contact'): contact_book.add,
-               ('R', 'REMOVE', '[R]emove contact'): contact_book.remove,
-               ('E', 'EDIT', '[E]dit contact'): contact_book.edit,
-               ('S', 'SEE', '[S]ee contacts'): contact_book.see,
-               ('U', 'UNDO', '[U]ndo last action'): contact_book.undo,
-               ('C', 'CLOSE', '[C]lose the contact book'): close}
-    while True:
-        choices_str = ''
-        for choice in choices.keys():
-            choices_str += f'{choice[-1]} | '
-        choices_str = choices_str[:-3]
-        print(f'What would you like to do with your contact book?\n\n{choices_str}\n')
-        choice_selected = input().upper()
+    def menu(self):
+        clear()
+        while True:
+            choices_str = ''
+            for choice in self.menu_choices.keys():
+                choices_str += f'{choice[-1]} | '
+            choices_str = choices_str[:-3]
+            print(f'What would you like to do with your contact book?\n\n{choices_str}\n')
+            choice_selected = input().upper()
 
-        for choice in choices.keys():
-            if choice_selected in choice:
-                choices[choice]()
+            for choice in self.menu_choices.keys():
+                if choice_selected in choice:
+                    self.menu_choices[choice]()
 
 
 if __name__ == '__main__':     
@@ -243,4 +244,4 @@ if __name__ == '__main__':
             data = json.load(f)
 
     contact_book = ContactBook(data, CONTACTS_PATH)
-    cb_menu(contact_book)
+    contact_book.menu()
