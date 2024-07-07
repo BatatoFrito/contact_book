@@ -81,8 +81,62 @@ class ContactBook:
                 pause()
         clear()
     
-    def edit():
-        ...
+    def edit(self):
+        clear()
+        if not self.contacts['contacts']:
+            print('There are no contacts to edit...\n')
+            pause()
+            clear()
+            return
+
+        index = 1
+        for contact in self.contacts['contacts']:
+            print(f"{index} - {contact['First Name']} {contact['Last Name']}")
+            index += 1
+        to_edit = input('\nWhich contact would you like to edit? (ID Number): ')
+        
+        try:
+            to_edit = int(to_edit)
+            if to_edit <= 0:
+                raise ValueError('Index has to be bigger than 0')
+            to_edit -= 1
+            contact_edit = self.contacts['contacts'][to_edit]
+            clear()
+        except(ValueError, IndexError):
+            clear()
+            print('Invalid contact ID...\n')
+            pause()
+            clear()
+            return
+
+        index = 1
+        for info in self.contact_info:
+            print(f"{index} - {info}")
+            index += 1
+        to_edit_info = input('\nWhich info would you like to edit? (ID Number): ')
+
+        try:
+            to_edit_info = int(to_edit_info)
+            if to_edit_info <= 0:
+                raise ValueError('Index has to be bigger than 0')
+            to_edit_info -= 1
+            new_info = self.contact_info[to_edit_info]
+            clear()
+        except(ValueError, IndexError):
+            clear()
+            print('Invalid info ID...\n')
+            pause()
+            clear()
+            return
+        
+        info_edit = input(f"What would you like the new {new_info} for {contact_edit['First Name']} {contact_edit['Last Name']} to be?: ")
+        clear()
+
+        confirmation = input('Are you sure you want to edit this contact?(Y/N): ').upper()
+        if confirmation.startswith('Y'):
+            self.history.append(deepcopy(self.contacts))
+            contact_edit[new_info] = info_edit
+        clear()
 
     def see():
         ...
@@ -104,8 +158,8 @@ except(FileNotFoundError):
                     '{'
                         '"First Name": "Example",'
                         '"Last Name": "Example",'
-                        '"E-mail": "exemple@email",'
-                        '"Phone": "123456789"'
+                        '"E-mail": "example@email.com",'
+                        '"Phone": "1234-5678"'
                     '}'
                             ']'
                 '}')
@@ -113,4 +167,4 @@ except(FileNotFoundError):
         data = json.load(f)
 
 contact_book = ContactBook(data, CONTACTS_PATH)
-contact_book.remove()
+contact_book.edit()
