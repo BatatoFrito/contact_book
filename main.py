@@ -136,6 +136,12 @@ class ContactBook:
         if confirmation.startswith('Y'):
             self.history.append(deepcopy(self.contacts))
             contact_edit[new_info] = info_edit
+            json_contacts = json.dumps(self.contacts)
+            with open(self.json_file, 'w+') as f:
+                f.truncate(0)
+                f.seek(0)
+                f.write(json_contacts)
+                f.seek(0)
         clear()
 
     def see():
