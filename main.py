@@ -144,11 +144,39 @@ class ContactBook:
                 f.seek(0)
         clear()
 
-    def see():
-        ...
+    def see(self):
+        index = 1
+        for contact in self.contacts['contacts']:
+            print(f"{index} - {contact['First Name']} {contact['Last Name']}")
+            index += 1
+        to_see = input('\nWhich contact would you like to see? (ID Number): ')
 
-    def undo():
-        ...
+        try:
+            to_see = int(to_see)
+            if to_see <= 0:
+                raise ValueError('Index has to be bigger than 0')
+            to_see -= 1
+            contact_see = self.contacts['contacts'][to_see]
+            clear()
+        except(ValueError, IndexError):
+            clear()
+            print('Invalid contact ID...\n')
+            pause()
+            clear()
+            return
+        
+        for key, value in contact_see.items():
+            print(f'{key} - {value}')
+        print()
+        pause()
+        clear()
+
+    def undo(self):
+        if not self.history:
+            print('There is nothing to undo...\n')
+            pause()
+            clear()
+            return
 
 
 FILE_PATH = Path(__file__).absolute().parent
@@ -173,4 +201,4 @@ except(FileNotFoundError):
         data = json.load(f)
 
 contact_book = ContactBook(data, CONTACTS_PATH)
-contact_book.edit()
+contact_book.see()
