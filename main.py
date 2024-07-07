@@ -59,7 +59,7 @@ class ContactBook:
         to_delete = input('\nWhich contact would you like to delete? (ID Number): ')
         clear()
 
-        confirmation = input('Are you sure you want to delete this contact?(Y/N): ').upper()
+        confirmation = input('Are you sure you want to delete this contact? (Y/N): ').upper()
         if confirmation.startswith('Y'):
             try:
                 self.history.append(deepcopy(self.contacts))
@@ -132,7 +132,7 @@ class ContactBook:
         info_edit = input(f"What would you like the new {new_info} for {contact_edit['First Name']} {contact_edit['Last Name']} to be?: ")
         clear()
 
-        confirmation = input('Are you sure you want to edit this contact?(Y/N): ').upper()
+        confirmation = input('Are you sure you want to edit this contact? (Y/N): ').upper()
         if confirmation.startswith('Y'):
             self.history.append(deepcopy(self.contacts))
             contact_edit[new_info] = info_edit
@@ -145,6 +145,7 @@ class ContactBook:
         clear()
 
     def see(self):
+        clear()
         index = 1
         for contact in self.contacts['contacts']:
             print(f"{index} - {contact['First Name']} {contact['Last Name']}")
@@ -172,13 +173,28 @@ class ContactBook:
         clear()
 
     def undo(self):
+        clear()
         if not self.history:
             print('There is nothing to undo...\n')
             pause()
             clear()
             return
-
-
+        
+        confirmation = input('Are you sure you want to undo last action? (Y/N): ').upper()
+        if confirmation.startswith('Y'):
+            clear()
+            self.contacts = self.history.pop()
+            json_contacts = json.dumps(self.contacts)
+            with open(self.json_file, 'w+') as f:
+                f.truncate(0)
+                f.seek(0)
+                f.write(json_contacts)
+                f.seek(0)
+            
+            print('Last action undone\n')
+            pause()
+        clear()
+        
 FILE_PATH = Path(__file__).absolute().parent
 CONTACTS_PATH = FILE_PATH / 'contacts.json'
 
@@ -201,4 +217,3 @@ except(FileNotFoundError):
         data = json.load(f)
 
 contact_book = ContactBook(data, CONTACTS_PATH)
-contact_book.see()
